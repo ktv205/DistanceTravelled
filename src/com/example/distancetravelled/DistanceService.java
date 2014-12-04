@@ -12,6 +12,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 public class DistanceService extends Service implements
@@ -35,6 +36,7 @@ public class DistanceService extends Service implements
 	private SharedPreferences distancePreferences;
 	private SharedPreferences.Editor edit;
 	private Location location;
+	private ResultReceiver receiver;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -45,6 +47,10 @@ public class DistanceService extends Service implements
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
+		 receiver = intent.getParcelableExtra("receiver");
+		 if(receiver!=null){
+			 Log.d(TAG,"receiver not null");
+		 }
 		Log.d(TAG, "onStartCommand");
 		distancePreferences = this.getSharedPreferences(
 				AppPreferences.DistancePreferences.DistancePrefFile,
@@ -67,7 +73,6 @@ public class DistanceService extends Service implements
 		mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 		return START_STICKY;
 	}
-
 	@Override
 	public void onLocationChanged(Location arg0) {
 		Log.d(TAG, "locationChanged");
@@ -106,8 +111,13 @@ public class DistanceService extends Service implements
 				distancePreferences.getLong(
 						AppPreferences.DistancePreferences.KEY_DISTANCE, 0)
 						+ (long) origin.distanceTo(dest));
+		long distance=distancePreferences.getLong(
+				AppPreferences.DistancePreferences.KEY_DISTANCE, 0);
 		Log.d(TAG, "distance travelled->" + (long) origin.distanceTo(dest) + "");
 		edit.commit();
+		 Bundle b = new Bundle();
+	     b.putLong("long", distance);
+	     receiver.send(1,b);
 
 	}
 

@@ -8,23 +8,30 @@ import android.app.ActivityManager.RunningServiceInfo;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements DistanceReceiver.Receiver {
 	
   private final static String TAG="MainActivity";
+  public DistanceReceiver mReceiver;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		mReceiver = new DistanceReceiver(new Handler());
+        mReceiver.setReceiver(this);
 		Log.d(TAG,"onCreate");
 		if(isMyServiceRunning(DistanceService.class)){
 			Log.d(TAG,"service running");
 		}else{
 			Log.d(TAG,"service not running");
-			startService(new Intent(this,DistanceService.class));
+			Intent intent=new Intent(this,DistanceService.class);
+			intent.putExtra("receiver", mReceiver);
+			startService(intent);
 		}
 	}
 
@@ -57,5 +64,13 @@ public class MainActivity extends ActionBarActivity {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public void onReceiveResult(int resultCode, Bundle resultData) {
+		Log.d(TAG,"onReceiveResult");
+		TextView textview=(TextView)findViewById(R.id.main_textview);
+		textview.setText(resultData.getLong("long")+" meters");
+		
 	}
 }
