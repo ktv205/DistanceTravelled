@@ -24,12 +24,12 @@ public class DistanceService extends Service implements
 	LocationRequest mLocationRequest;
 	private static final int MILLISECONDS_PER_SECOND = 1000;
 	// Update frequency in seconds
-	public static final int UPDATE_INTERVAL_IN_SECONDS = 5;
+	public static final int UPDATE_INTERVAL_IN_SECONDS = 10;
 	// Update frequency in milliseconds
 	private static final long UPDATE_INTERVAL = MILLISECONDS_PER_SECOND
 			* UPDATE_INTERVAL_IN_SECONDS;
 	// The fastest update frequency, in seconds
-	private static final int FASTEST_INTERVAL_IN_SECONDS = 1;
+	private static final int FASTEST_INTERVAL_IN_SECONDS = 5;
 	// A fast frequency ceiling in milliseconds
 	private static final long FASTEST_INTERVAL = MILLISECONDS_PER_SECOND
 			* FASTEST_INTERVAL_IN_SECONDS;
@@ -47,10 +47,12 @@ public class DistanceService extends Service implements
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		super.onStartCommand(intent, flags, startId);
-		 receiver = intent.getParcelableExtra("receiver");
-		 if(receiver!=null){
-			 Log.d(TAG,"receiver not null");
-		 }
+		if (intent != null) {
+			receiver = intent.getParcelableExtra("receiver");
+			if (receiver != null) {
+				Log.d(TAG, "receiver not null");
+			}
+		}
 		Log.d(TAG, "onStartCommand");
 		distancePreferences = this.getSharedPreferences(
 				AppPreferences.DistancePreferences.DistancePrefFile,
@@ -73,18 +75,18 @@ public class DistanceService extends Service implements
 		mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 		return START_STICKY;
 	}
+
 	@Override
 	public void onLocationChanged(Location arg0) {
 		Log.d(TAG, "locationChanged");
-		if (location != null) {
 			calculateDistance(location, arg0);
-		}
-		location = arg0;
+		    location = arg0;
 
 	}
 
 	@Override
 	public void onConnected(Bundle arg0) {
+		location=mClient.getLastLocation();
 		Log.d(TAG, "onConnected");
 		mClient.requestLocationUpdates(mLocationRequest, this);
 		Log.d("onConnected", "here");
@@ -111,19 +113,21 @@ public class DistanceService extends Service implements
 				distancePreferences.getLong(
 						AppPreferences.DistancePreferences.KEY_DISTANCE, 0)
 						+ (long) origin.distanceTo(dest));
-		long distance=distancePreferences.getLong(
+		long distance = distancePreferences.getLong(
 				AppPreferences.DistancePreferences.KEY_DISTANCE, 0);
 		Log.d(TAG, "distance travelled->" + (long) origin.distanceTo(dest) + "");
 		edit.commit();
-		 Bundle b = new Bundle();
-	     b.putLong("long", distance);
-	     receiver.send(1,b);
+		Bundle b = new Bundle();
+		b.putLong(AppPreferences.KeyNames.KEY_EXTRAS_LONG_DISTANCE, distance);
+		if (receiver != null) {
+			receiver.send(1, b);
+		}
 
 	}
 
 	@Override
 	public void onDestroy() {
-		Log.d(TAG,"onDestroy");
+		Log.d(TAG, "onDestroy");
 		super.onDestroy();
 		mClient.disconnect();
 	}

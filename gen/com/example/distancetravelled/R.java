@@ -2030,7 +2030,7 @@ containing a value of this type.
         public static final int action_mode_bar=0x7f0b003f;
         public static final int action_mode_bar_stub=0x7f0b003e;
         public static final int action_mode_close_button=0x7f0b0031;
-        public static final int action_settings=0x7f0b0053;
+        public static final int action_settings=0x7f0b0052;
         public static final int activity_chooser_view_content=0x7f0b0032;
         public static final int always=0x7f0b0025;
         public static final int beginning=0x7f0b002c;
@@ -2061,8 +2061,7 @@ containing a value of this type.
         public static final int image=0x7f0b0034;
         public static final int listMode=0x7f0b001d;
         public static final int list_item=0x7f0b0036;
-        public static final int main_button_pause=0x7f0b0052;
-        public static final int main_button_start=0x7f0b0051;
+        public static final int main_button_control=0x7f0b0051;
         public static final int main_textview=0x7f0b0050;
         public static final int match_parent=0x7f0b0015;
         public static final int middle=0x7f0b002e;
@@ -2323,6 +2322,7 @@ containing a value of this type.
         public static final int hello_world=0x7f060034;
         public static final int store_picture_message=0x7f060001;
         public static final int store_picture_title=0x7f060000;
+        public static final int string_pause=0x7f060036;
         /**  Text on a placeholder buy button when Google Play services is not
          available or up-to-date 
          */
